@@ -1,0 +1,104 @@
+openstack flavor create --ram 16384 --disk 25 --vcpu 4 --public ocp4-ctrl
+
+
+
+openstack project create openshiftpoc_4
+openstack quota set --ram -1 --cores -1 openshiftpoc_4
+openstack quota set --secgroups 3 --secgroup-rules 100 openshiftpoc_4
+openstack user create --password 'redhat@123' openshift_admin
+openstack role add --project openshiftpoc_4 --user openshift_admin admin
+openstack role add --user openshift_admin --project openshiftpoc_4 swiftoperator
+openstack security group create all-open-ports --description all-open-ports-ocp --project openshiftpoc_4
+
+openstack object store account set --property Temp-URL-Key=superkey
+
+file rhcos-4.2.0-x86_64-openstack.qcow2
+mv rhcos-4.2.0-x86_64-openstack.qcow2 rhcos-4.2.0-x86_64-openstack.qcow2.gz
+gunzip rhcos-4.2.0-x86_64-openstack.qcow2.gz
+file rhcos-4.2.0-x86_64-openstack.qcow2
+
+openstack image create --container-format=bare --disk-format=qcow2 --file=/home/stack/amitpoc/rhcos-4.2.0-x86_64-openstack.qcow2  rhcos
+openstack flavor create --ram 16384 --disk 25 --vcpu 4 --public ocp4-ctrl
+
+openstack project show openshiftpoc_4 -c id -f value
+openstack floating ip create --floating-ip-address 10.85.50.64 nr_provider --project openshiftpoc_4
+
+openshift-install create install-config --dir=/home/stack/amitpoc/
+./openshift-install create ignition-configs --dir=/home/stack/amitpoc/
+./openshift-install create manifests --dir=/home/stack/amitpoc/
+
+api.ocp4-poc.cloud.vssi.com
+
+time openshift-install --log-level=debug create cluster --dir ocp_install
+
+time ./openshift-install create cluster --dir=. --log-level=info 
+
+
+openstack floating ip create --floating-ip-address  public
+
+
+=============================================================
+[stack@undercloud osd-ocp-demo]$ cat create_ocp_tenant.sh
+#!/bin/bash
+source ../overcloudrc
+openstack project create ocp-tenant
+openstack user create ocp-user --password mypassword
+user=$(openstack user show ocp-user -f value -c id)
+admin=$(openstack user show admin -f value -c id)
+project=$(openstack project show ocp-tenant -f value -c id)
+openstack role add --user $user --project $project _member_
+openstack role add --user $user --project $project admin
+openstack role add --user $admin --project $project admin
+openstack role add --user $user --project $project swiftoperator
+# show default quota and set new limits on project ocp-tenant
+echo "compute quota"
+openstack quota list --compute --project ocp-tenant -f yaml
+openstack quota set --cores 40 --ram 102400 $project
+echo "network quota"
+openstack quota list --network --project ocp-tenant -f yaml
+openstack quota set --secgroups 40 --secgroup-rules 500 $project
+# create needed flavors
+openstack flavor create --ram 16384 --vcpu 4 --disk 25 master
+echo -e "working on $project"
+source ocp-tenant-openrc
+openstack object store account set --property Temp-URL-Key=superkey
+# create rhcos image
+curl --compressed -J -L -o rhcos-openstack.qcow2 https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/pre-release/latest/rhcos-42.80.20191002.0-openstack.qcow2
+openstack image create --container-format=bare --disk-format=qcow2 --file rhcos-openstack.qcow2 rhcos
+mkdir -p /home/stack/osd-ocp-demo
+cd /home/stack/osd-ocp-demo
+cat <<EOF > clouds.yaml
+clouds:
+openstack:
+auth:
+auth_url: http://192.168.122.150:5000/v3
+username: "ocp-user"
+password: "mypassword"
+project_id: $project
+project_name: "ocp-tenant"
+user_domain_name: "Default"
+region_name: "regionOne"
+interface: "public"
+identity_api_version: 3
+EOF
+wget -r --no-parent -A 'openshift-install-linux*.tar.gz' https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/
+wget -r --no-parent -A 'openshift-client-linux*.tar.gz' https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/
+tar -xvzf mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-install-linux-4.2.4.tar.gz -C .
+tar -xvzf mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux-4.2.0.tar.gz -C .
+# openstack FIP for API lb
+openstack floating ip create --floating-ip-address 192.168.122.164 --project ocp-tenant external
+# openstack FIP for APPS lb
+openstack floating ip create --floating-ip-address 192.168.122.180 --project ocp-tenant external
+# add ssh key to ssh agent
+eval "$(ssh-agent -s)"
+ssh-add /home/stack/.ssh/id_rsa
+# configure KUBECONFIG path
+export KUBECONFIG='/home/stack/osd-ocp-demo/auth/kubeconfig'
+
+
+ls /proc/sys/net/ipv4/conf
+ip -o a
+dmesg | grep ens3
+
+
+

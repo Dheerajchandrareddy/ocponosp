@@ -1,0 +1,423 @@
+(overcloud) [stack@indr01vr amitpoc]$ openstack quota show admin
++----------------------+----------------------------------+
+| Field                | Value                            |
++----------------------+----------------------------------+
+| backup-gigabytes     | 1000                             |
+| backups              | 10                               |
+| cores                | 500                              |
+| fixed-ips            | -1                               |
+| floating-ips         | 500                              |
+| gigabytes            | 40000                            |
+| gigabytes_ceph       | -1                               |
+| gigabytes_dellsc     | -1                               |
+| groups               | 10                               |
+| health_monitors      | None                             |
+| injected-file-size   | 10240                            |
+| injected-files       | 50                               |
+| injected-path-size   | 255                              |
+| instances            | 200                              |
+| key-pairs            | 100                              |
+| l7_policies          | None                             |
+| listeners            | None                             |
+| load_balancers       | None                             |
+| location             | None                             |
+| name                 | None                             |
+| networks             | 10                               |
+| per-volume-gigabytes | -1                               |
+| pools                | None                             |
+| ports                | 1000                             |
+| project              | 4d9031e2761c482e873ee7fcdf73ba29 |
+| project_name         | admin                            |
+| properties           | 128                              |
+| ram                  | 1050200                          |
+| rbac_policies        | 10                               |
+| routers              | 100                              |
+| secgroup-rules       | 200                              |
+| secgroups            | 20                               |
+| server-group-members | 10                               |
+| server-groups        | 10                               |
+| snapshots            | 2000                             |
+| snapshots_ceph       | -1                               |
+| snapshots_dellsc     | -1                               |
+| subnet_pools         | -1                               |
+| subnets              | 100                              |
+| volumes              | 500                              |
+| volumes_ceph         | -1                               |
+| volumes_dellsc       | -1                               |
++----------------------+----------------------------------+
+
+
+
+(overcloud) [stack@indr01vr amitpoc]$ openstack flavor create --ram 16384 --disk 25 --vcpu 4 --public ocp4-ctrl
++----------------------------+--------------------------------------+
+| Field                      | Value                                |
++----------------------------+--------------------------------------+
+| OS-FLV-DISABLED:disabled   | False                                |
+| OS-FLV-EXT-DATA:ephemeral  | 0                                    |
+| disk                       | 25                                   |
+| id                         | de8b526d-e88a-42c3-8c29-42cf383d14e0 |
+| name                       | ocp4-ctrl                            |
+| os-flavor-access:is_public | True                                 |
+| properties                 |                                      |
+| ram                        | 16384                                |
+| rxtx_factor                | 1.0                                  |
+| swap                       |                                      |
+| vcpus                      | 4                                    |
++----------------------------+--------------------------------------+
+(overcloud) [stack@indr01vr amitpoc]$ openstack flavor list |grep ocp4-ctrl
+| de8b526d-e88a-42c3-8c29-42cf383d14e0 | ocp4-ctrl              |  16384 |   25 |         0 |     4 | True      |
+(overcloud) [stack@indr01vr amitpoc]$ openstack flavor list |grep centos
+| 53d4cd9b-ef42-4dbf-aa8d-dff8302e96fc | vision-centos          |  16384 |    1 |         0 |     8 | True      |
+| dfb3edc8-620b-4172-b7ba-c1166e5946e4 | cpns-vision-centos     |  16384 |    0 |         0 |     8 | True      |
+(overcloud) [stack@indr01vr amitpoc]$ openstack flavor show dfb3edc8-620b-4172-b7ba-c1166e5946e4
++----------------------------+--------------------------------------+
+| Field                      | Value                                |
++----------------------------+--------------------------------------+
+| OS-FLV-DISABLED:disabled   | False                                |
+| OS-FLV-EXT-DATA:ephemeral  | 0                                    |
+| access_project_ids         | None                                 |
+| disk                       | 0                                    |
+| id                         | dfb3edc8-620b-4172-b7ba-c1166e5946e4 |
+| name                       | cpns-vision-centos                   |
+| os-flavor-access:is_public | True                                 |
+| properties                 |                                      |
+| ram                        | 16384                                |
+| rxtx_factor                | 1.0                                  |
+| swap                       | 2048                                 |
+| vcpus                      | 8                                    |
++----------------------------+--------------------------------------+
+(overcloud) [stack@indr01vr amitpoc]$ openstack project create openshiftpoc_4
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description |                                  |
+| domain_id   | default                          |
+| enabled     | True                             |
+| id          | 2c970b364b3948cd9270c7b22886a5b6 |
+| is_domain   | False                            |
+| name        | openshiftpoc_4                   |
+| parent_id   | default                          |
+| tags        | []                               |
++-------------+----------------------------------+
+(overcloud) [stack@indr01vr amitpoc]$ openstack list quota
+openstack: 'list quota' is not an openstack command. See 'openstack --help'.
+Did you mean one of these?
+  limits show
+(overcloud) [stack@indr01vr amitpoc]$ openstack quota list
+usage: openstack quota list [-h] [-f {csv,json,table,value,yaml}] [-c COLUMN]
+                            [--max-width <integer>] [--fit-width]
+                            [--print-empty] [--noindent]
+                            [--quote {all,minimal,none,nonnumeric}]
+                            [--sort-column SORT_COLUMN] [--project <project>]
+                            [--detail] (--compute | --volume | --network)
+openstack quota list: error: one of the arguments --compute --volume --network is required
+(overcloud) [stack@indr01vr amitpoc]$ openstack quota set --ram -1 --cores -1 openshiftpoc_4
+(overcloud) [stack@indr01vr amitpoc]$
+(overcloud) [stack@indr01vr amitpoc]$
+(overcloud) [stack@indr01vr amitpoc]$ openstack quota set --secgroups 3 --secgroup-rules 60 openshiftpoc_4
+(overcloud) [stack@indr01vr amitpoc]$ openstack user list |grep openshift
+(overcloud) [stack@indr01vr amitpoc]$ openstack user list |grep openshift_admin
+(overcloud) [stack@indr01vr amitpoc]$ openstack user list --all|grep openshift_admin
+usage: openstack user list [-h] [-f {csv,json,table,value,yaml}] [-c COLUMN]
+                           [--max-width <integer>] [--fit-width]
+                           [--print-empty] [--noindent]
+                           [--quote {all,minimal,none,nonnumeric}]
+                           [--sort-column SORT_COLUMN] [--domain <domain>]
+                           [--group <group> | --project <project>] [--long]
+openstack user list: error: unrecognized arguments: --all
+(overcloud) [stack@indr01vr amitpoc]$ openstack user create --password 'redhat@123' openshift_admin
++---------------------+----------------------------------+
+| Field               | Value                            |
++---------------------+----------------------------------+
+| domain_id           | default                          |
+| enabled             | True                             |
+| id                  | b7b8593bc3dc47068a863cd052264181 |
+| name                | openshift_admin                  |
+| options             | {}                               |
+| password_expires_at | None                             |
++---------------------+----------------------------------+
+(overcloud) [stack@indr01vr amitpoc]$ openstack role add --project openshiftpoc_4 --user openshift_admin admin
+(overcloud) [stack@indr01vr amitpoc]$ openstack role add --user openshift_admin --project openshiftpoc_4 swiftoperator
+(overcloud) [stack@indr01vr amitpoc]$
+(overcloud) [stack@indr01vr ~]$ cat openshiftpoc_4rc
+# Clear any old environment that may conflict.
+for key in $( set | awk '{FS="="}  /^OS_/ {print $1}' ); do unset $key ; done
+export OS_NO_CACHE=True
+export COMPUTE_API_VERSION=1.1
+export OS_USERNAME=openshift_admin
+export OS_PASSWORD=redhat@123
+export no_proxy=,10.85.49.148,10.85.52.141
+export OS_REGION_NAME=regionOne
+export OS_USER_DOMAIN_NAME=Default
+export OS_VOLUME_API_VERSION=3
+export OS_CLOUDNAME=overcloud
+export OS_AUTH_URL=http://10.85.49.148:5000//v3
+export NOVA_VERSION=1.1
+export OS_IMAGE_API_VERSION=2
+#export OS_PASSWORD=ayZma3wpahjHWgpjBRQypFUYK
+export OS_PROJECT_DOMAIN_NAME=Default
+export OS_IDENTITY_API_VERSION=3
+export OS_PROJECT_NAME=openshiftpoc_4
+export OS_AUTH_TYPE=password
+export PYTHONWARNINGS='ignore:Certificate has no, ignore:A true SSLContext object is not available'
+
+# Add OS_CLOUDNAME to PS1
+if [ -z "${CLOUDPROMPT_ENABLED:-}" ]; then
+    export PS1=${PS1:-""}
+    export PS1=\${OS_CLOUDNAME:+"(\$OS_CLOUDNAME)"}\ $PS1
+    export CLOUDPROMPT_ENABLED=1
+fi
+
+(overcloud) [stack@indr01vr ~]$ openstack object store account set --property Temp-URL-Key=superkey
+(overcloud) [stack@indr01vr ~]$
+(overcloud) [stack@indr01vr ~]$
+(overcloud) [stack@indr01vr ~]$
+(overcloud) [stack@indr01vr ~]$ cd amitpoc/
+(overcloud) [stack@indr01vr amitpoc]$ ls -lrth
+total 773M
+-rw-rw-r--. 1 stack stack  27M Apr 15 15:49 openshift-client-linux.tar.gz
+-rw-rw-r--. 1 stack stack  79M Apr 15 15:49 openshift-install-linux.tar.gz
+-rw-rw-r--. 1 stack stack 2.8K Apr 15 15:49 pull-secret
+-rw-rw-r--. 1 stack stack 668M Apr 15 15:51 rhcos-4.2.0-x86_64-openstack.qcow2
+(overcloud) [stack@indr01vr amitpoc]$ file rhcos-4.2.0-x86_64-openstack.qcow2
+rhcos-4.2.0-x86_64-openstack.qcow2: gzip compressed data, was "rhcos-42.80.20191002.0-openstack.qcow2", from Unix, last modified: Wed Oct  2 19:18:08 2019
+(overcloud) [stack@indr01vr amitpoc]$ mv rhcos-4.2.0-x86_64-openstack.qcow2 rhcos-4.2.0-x86_64-openstack.qcow2.gz
+(overcloud) [stack@indr01vr amitpoc]$ ls -lrth
+total 773M
+-rw-rw-r--. 1 stack stack  27M Apr 15 15:49 openshift-client-linux.tar.gz
+-rw-rw-r--. 1 stack stack  79M Apr 15 15:49 openshift-install-linux.tar.gz
+-rw-rw-r--. 1 stack stack 2.8K Apr 15 15:49 pull-secret
+-rw-rw-r--. 1 stack stack 668M Apr 15 15:51 rhcos-4.2.0-x86_64-openstack.qcow2.gz
+(overcloud) [stack@indr01vr amitpoc]$ gunzip rhcos-4.2.0-x86_64-openstack.qcow2.gz
+(overcloud) [stack@indr01vr amitpoc]$
+(overcloud) [stack@indr01vr amitpoc]$ file rhcos-4.2.0-x86_64-openstack.qcow2
+rhcos-4.2.0-x86_64-openstack.qcow2: QEMU QCOW Image (v3), 17179869184 bytes
+(overcloud) [stack@indr01vr amitpoc]$
+(overcloud) [stack@indr01vr amitpoc]$ openstack image create --container-format=bare --disk-format=qcow2 --file rhcos-4.2.0-x86_64-openstack.qcow2 rhcos-4.2 +------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Field            | Value                                                                                                                                                                                                                                             |
++------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| checksum         | 592f9d70784d1ce8ee97cdb96cdf53c7                                                                                                                                                                                                                  |
+| container_format | bare                                                                                                                                                                                                                                              |
+| created_at       | 2020-04-15T11:24:13Z                                                                                                                                                                                                                              |
+| disk_format      | qcow2                                                                                                                                                                                                                                             |
+| file             | /v2/images/46f4af8b-d27f-431d-b2dd-b787b7c3718d/file                                                                                                                                                                                              |
+| id               | 46f4af8b-d27f-431d-b2dd-b787b7c3718d                                                                                                                                                                                                              |
+| min_disk         | 0                                                                                                                                                                                                                                                 |
+| min_ram          | 0                                                                                                                                                                                                                                                 |
+| name             | rhcos-4.2                                                                                                                                                                                                                                         |
+| owner            | 2c970b364b3948cd9270c7b22886a5b6                                                                                                                                                                                                                  |
+| properties       | direct_url='rbd://17883b78-56db-4190-9472-9dcf9b6e4156/images/46f4af8b-d27f-431d-b2dd-b787b7c3718d/snap', locations='[{u'url': u'rbd://17883b78-56db-4190-9472-9dcf9b6e4156/images/46f4af8b-d27f-431d-b2dd-b787b7c3718d/snap', u'metadata': {}}]' |
+| protected        | False                                                                                                                                                                                                                                             |
+| schema           | /v2/schemas/image                                                                                                                                                                                                                                 |
+| size             | 1911160832                                                                                                                                                                                                                                        |
+| status           | active                                                                                                                                                                                                                                            |
+| tags             |                                                                                                                                                                                                                                                   |
+| updated_at       | 2020-04-15T11:24:38Z                                                                                                                                                                                                                              |
+| virtual_size     | None                                                                                                                                                                                                                                              |
+| visibility       | shared                                                                                                                                                                                                                                            |
++------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+(overcloud) [stack@indr01vr amitpoc]$
+(overcloud) [stack@indr01vr amitpoc]$ openstack image list|grep rhcos-4.2
+| 46f4af8b-d27f-431d-b2dd-b787b7c3718d | rhcos-4.2                                                                      | active |
+(overcloud) [stack@indr01vr amitpoc]$ ls -lrt
+total 1973740
+-rw-rw-r--. 1 stack stack   27489744 Apr 15 15:49 openshift-client-linux.tar.gz
+-rw-rw-r--. 1 stack stack   82444665 Apr 15 15:49 openshift-install-linux.tar.gz
+-rw-rw-r--. 1 stack stack       2799 Apr 15 15:49 pull-secret
+-rw-rw-r--. 1 stack stack 1911160832 Apr 15 15:51 rhcos-4.2.0-x86_64-openstack.qcow2
+(overcloud) [stack@indr01vr amitpoc]$ tar xvfz openshift-install-linux-4.2.0.tar.gz \
+> -C /usr/bin/
+tar (child): openshift-install-linux-4.2.0.tar.gz: Cannot open: No such file or directory
+tar (child): Error is not recoverable: exiting now
+tar: Child returned status 2
+tar: Error is not recoverable: exiting now
+(overcloud) [stack@indr01vr amitpoc]$ tar xvfz openshift-install-linux.tar.gz -C /usr/bin/
+README.md
+tar: README.md: Cannot open: Permission denied
+openshift-install
+tar: openshift-install: Cannot open: Permission denied
+tar: Exiting with failure status due to previous errors
+(overcloud) [stack@indr01vr amitpoc]$ ls -lrth
+total 1.9G
+-rw-rw-r--. 1 stack stack  27M Apr 15 15:49 openshift-client-linux.tar.gz
+-rw-rw-r--. 1 stack stack  79M Apr 15 15:49 openshift-install-linux.tar.gz
+-rw-rw-r--. 1 stack stack 2.8K Apr 15 15:49 pull-secret
+-rw-rw-r--. 1 stack stack 1.8G Apr 15 15:51 rhcos-4.2.0-x86_64-openstack.qcow2
+(overcloud) [stack@indr01vr amitpoc]$ chmod 777 openshift-client-linux.tar.gz openshift-install-linux.tar.gz
+(overcloud) [stack@indr01vr amitpoc]$ ls -lrth
+total 1.9G
+-rwxrwxrwx. 1 stack stack  27M Apr 15 15:49 openshift-client-linux.tar.gz
+-rwxrwxrwx. 1 stack stack  79M Apr 15 15:49 openshift-install-linux.tar.gz
+-rw-rw-r--. 1 stack stack 2.8K Apr 15 15:49 pull-secret
+-rw-rw-r--. 1 stack stack 1.8G Apr 15 15:51 rhcos-4.2.0-x86_64-openstack.qcow2
+(overcloud) [stack@indr01vr amitpoc]$ tar xvfz openshift-install-linux.tar.gz -C /usr/bin/
+README.md
+tar: README.md: Cannot open: Permission denied
+openshift-install
+tar: openshift-install: Cannot open: Permission denied
+tar: Exiting with failure status due to previous errors
+(overcloud) [stack@indr01vr amitpoc]$ ls -lrth
+total 1.9G
+-rwxrwxrwx. 1 stack stack  27M Apr 15 15:49 openshift-client-linux.tar.gz
+-rwxrwxrwx. 1 stack stack  79M Apr 15 15:49 openshift-install-linux.tar.gz
+-rw-rw-r--. 1 stack stack 2.8K Apr 15 15:49 pull-secret
+-rw-rw-r--. 1 stack stack 1.8G Apr 15 15:51 rhcos-4.2.0-x86_64-openstack.qcow2
+(overcloud) [stack@indr01vr amitpoc]$ tar xvfz openshift-install-linux.tar.gz
+README.md
+openshift-install
+(overcloud) [stack@indr01vr amitpoc]$ ls -lrth
+total 2.2G
+-rw-r--r--. 1 stack stack  706 Mar 31 22:40 README.md
+-rwxr-xr-x. 1 stack stack 318M Mar 31 22:40 openshift-install
+-rwxrwxrwx. 1 stack stack  27M Apr 15 15:49 openshift-client-linux.tar.gz
+-rwxrwxrwx. 1 stack stack  79M Apr 15 15:49 openshift-install-linux.tar.gz
+-rw-rw-r--. 1 stack stack 2.8K Apr 15 15:49 pull-secret
+-rw-rw-r--. 1 stack stack 1.8G Apr 15 15:51 rhcos-4.2.0-x86_64-openstack.qcow2
+(overcloud) [stack@indr01vr amitpoc]$ tar xvfz openshift-client-linux.tar.gz
+README.md
+oc
+kubectl
+(overcloud) [stack@indr01vr amitpoc]$ ls -lrth
+total 2.4G
+-rw-r--r--. 1 stack stack  954 Mar 31 22:28 README.md
+-rwxr-xr-x. 2 stack stack  81M Mar 31 22:28 oc
+-rwxr-xr-x. 2 stack stack  81M Mar 31 22:28 kubectl
+-rwxr-xr-x. 1 stack stack 318M Mar 31 22:40 openshift-install
+-rwxrwxrwx. 1 stack stack  27M Apr 15 15:49 openshift-client-linux.tar.gz
+-rwxrwxrwx. 1 stack stack  79M Apr 15 15:49 openshift-install-linux.tar.gz
+-rw-rw-r--. 1 stack stack 2.8K Apr 15 15:49 pull-secret
+-rw-rw-r--. 1 stack stack 1.8G Apr 15 15:51 rhcos-4.2.0-x86_64-openstack.qcow2
+(overcloud) [stack@indr01vr amitpoc]$
+(overcloud) [stack@indr01vr amitpoc]$ openstack project show openshiftpoc_4 -c id -f value
+2c970b364b3948cd9270c7b22886a5b6
+(overcloud) [stack@indr01vr amitpoc]$
+(overcloud) [stack@indr01vr amitpoc]$ ls -lrth
+total 2.4G
+-rw-r--r--. 1 stack stack  954 Mar 31 22:28 README.md
+-rwxr-xr-x. 2 stack stack  81M Mar 31 22:28 oc
+-rwxr-xr-x. 2 stack stack  81M Mar 31 22:28 kubectl
+-rwxr-xr-x. 1 stack stack 318M Mar 31 22:40 openshift-install
+-rwxrwxrwx. 1 stack stack  27M Apr 15 15:49 openshift-client-linux.tar.gz
+-rwxrwxrwx. 1 stack stack  79M Apr 15 15:49 openshift-install-linux.tar.gz
+-rw-rw-r--. 1 stack stack 2.8K Apr 15 15:49 pull-secret
+-rw-rw-r--. 1 stack stack 1.8G Apr 15 15:51 rhcos-4.2.0-x86_64-openstack.qcow2
+-rw-rw-r--. 1 stack stack  835 Apr 15 17:19 clouds.yaml
+(overcloud) [stack@indr01vr amitpoc]$ openstack project show openshiftpoc_4 -c id -f value
+2c970b364b3948cd9270c7b22886a5b6
+(overcloud) [stack@indr01vr amitpoc]$ vim clouds.yaml
+(overcloud) [stack@indr01vr amitpoc]$ cat clouds.yaml
+# This is a clouds.yaml file, which can be used by OpenStack tools as a source
+# of configuration on how to connect to a cloud. If this is your only cloud,
+# just put this file in ~/.config/openstack/clouds.yaml and tools like
+# python-openstackclient will just work with no further config. (You will need
+# to add your password to the auth section)
+# If you have more than one cloud account, add the cloud entry to the clouds
+# section of your existing file and you can refer to them by name with
+# OS_CLOUD=openstack or --os-cloud=openstack
+clouds:
+  openstack:
+    auth:
+      auth_url: http://10.85.49.148:5000/v3
+      username: "openshift_admin"
+      password: redhat@123
+      project_id: 2c970b364b3948cd9270c7b22886a5b6
+      project_name: "openshiftpoc_4"
+      user_domain_name: "Default"
+    region_name: "regionOne"
+    interface: "public"
+    identity_api_version: 3
+(overcloud) [stack@indr01vr amitpoc]$ openstack image create --container-format=bare --disk-format=iso --file=/home/stack/amitpoc/rhcos-4.2.0-x86_64-installer.iso  rhcos-iso-4.2 --project openshiftpoc_4
++------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Field            | Value                                                                                                                                                                                                                                             |
++------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| checksum         | 0d6446ebc1835b34fbda38a54439da3f                                                                                                                                                                                                                  |
+| container_format | bare                                                                                                                                                                                                                                              |
+| created_at       | 2020-04-15T16:37:39Z                                                                                                                                                                                                                              |
+| disk_format      | iso                                                                                                                                                                                                                                               |
+| file             | /v2/images/3381625c-bf64-4e4b-aedc-e602e6ed7f1f/file                                                                                                                                                                                              |
+| id               | 3381625c-bf64-4e4b-aedc-e602e6ed7f1f                                                                                                                                                                                                              |
+| min_disk         | 0                                                                                                                                                                                                                                                 |
+| min_ram          | 0                                                                                                                                                                                                                                                 |
+| name             | rhcos-iso-4.2                                                                                                                                                                                                                                     |
+| owner            | 2c970b364b3948cd9270c7b22886a5b6                                                                                                                                                                                                                  |
+| properties       | direct_url='rbd://17883b78-56db-4190-9472-9dcf9b6e4156/images/3381625c-bf64-4e4b-aedc-e602e6ed7f1f/snap', locations='[{u'url': u'rbd://17883b78-56db-4190-9472-9dcf9b6e4156/images/3381625c-bf64-4e4b-aedc-e602e6ed7f1f/snap', u'metadata': {}}]' |
+| protected        | False                                                                                                                                                                                                                                             |
+| schema           | /v2/schemas/image                                                                                                                                                                                                                                 |
+| size             | 80060416                                                                                                                                                                                                                                          |
+| status           | active                                                                                                                                                                                                                                            |
+| tags             |                                                                                                                                                                                                                                                   |
+| updated_at       | 2020-04-15T16:37:42Z                                                                                                                                                                                                                              |
+| virtual_size     | None                                                                                                                                                                                                                                              |
+| visibility       | shared                                                                                                                                                                                                                                            |
++------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+(overcloud) [stack@indr01vr amitpoc]$
+(overcloud) [stack@indr01vr amitpoc]$ ./openshift-install create install-config --dir=/home/stack/amitpoc/
+? SSH Public Key <none>
+? Platform openstack
+? Cloud openstack
+? ExternalNetwork nr_provider
+? APIFloatingIPAddress 10.85.50.58
+? FlavorName ocp4-ctrl
+? Base Domain cloud.vssi.com
+? Cluster Name ocp4-poc
+? Pull Secret [? for help] *
+
+(overcloud) [stack@indr01vr amitpoc]$ ls -lrth
+total 2.5G
+-rw-r--r--. 1 stack stack  954 Mar 31 22:28 README.md
+-rwxr-xr-x. 2 stack stack  81M Mar 31 22:28 oc
+-rwxr-xr-x. 2 stack stack  81M Mar 31 22:28 kubectl
+-rwxr-xr-x. 1 stack stack 318M Mar 31 22:40 openshift-install
+-rwxrwxrwx. 1 stack stack  27M Apr 15 15:49 openshift-client-linux.tar.gz
+-rwxrwxrwx. 1 stack stack  79M Apr 15 15:49 openshift-install-linux.tar.gz
+-rw-rw-r--. 1 stack stack 2.8K Apr 15 15:49 pull-secret
+-rw-rw-r--. 1 stack stack 1.8G Apr 15 15:51 rhcos-4.2.0-x86_64-openstack.qcow2
+-rw-rw-r--. 1 stack stack  882 Apr 15 17:24 clouds.yaml
+drwxrwxr-x. 2 stack stack 4.0K Apr 15 17:44 bkrsa
+-rw-rw-r--. 1 stack stack  77M Apr 15 21:58 rhcos-4.2.0-x86_64-installer.iso
+-rw-r-----. 1 stack stack 3.5K Apr 16 10:59 install-config.yaml
+(overcloud) [stack@indr01vr amitpoc]$ ./openshift-install create ignition-configs --dir=/home/stack/amitpoc/
+INFO Consuming Install Config from target directory
+(overcloud) [stack@indr01vr amitpoc]$ ls -lrth
+total 2.5G
+-rw-r--r--. 1 stack stack  954 Mar 31 22:28 README.md
+-rwxr-xr-x. 2 stack stack  81M Mar 31 22:28 oc
+-rwxr-xr-x. 2 stack stack  81M Mar 31 22:28 kubectl
+-rwxr-xr-x. 1 stack stack 318M Mar 31 22:40 openshift-install
+-rwxrwxrwx. 1 stack stack  27M Apr 15 15:49 openshift-client-linux.tar.gz
+-rwxrwxrwx. 1 stack stack  79M Apr 15 15:49 openshift-install-linux.tar.gz
+-rw-rw-r--. 1 stack stack 2.8K Apr 15 15:49 pull-secret
+-rw-rw-r--. 1 stack stack 1.8G Apr 15 15:51 rhcos-4.2.0-x86_64-openstack.qcow2
+-rw-rw-r--. 1 stack stack  882 Apr 15 17:24 clouds.yaml
+drwxrwxr-x. 2 stack stack 4.0K Apr 15 17:44 bkrsa
+-rw-rw-r--. 1 stack stack  77M Apr 15 21:58 rhcos-4.2.0-x86_64-installer.iso
+-rw-r-----. 1 stack stack 3.5K Apr 16 11:01 install-config.yaml-bkp
+drwxr-x---. 2 stack stack 4.0K Apr 16 11:08 auth
+-rw-r-----. 1 stack stack 1.8K Apr 16 11:08 master.ign
+-rw-r-----. 1 stack stack 1.8K Apr 16 11:08 worker.ign
+-rw-r-----. 1 stack stack 293K Apr 16 11:08 bootstrap.ign
+-rw-r-----. 1 stack stack  191 Apr 16 11:08 metadata.json
+
+(overcloud) [stack@indr01vr amitpoc]$ ./openshift-install create manifests --dir=/home/stack/amitpoc/
+INFO Consuming Master Ignition Config from target directory
+INFO Consuming Worker Ignition Config from target directory
+(overcloud) [stack@indr01vr amitpoc]$ ls -lrth
+total 2.5G
+-rw-r--r--. 1 stack stack  954 Mar 31 22:28 README.md
+-rwxr-xr-x. 2 stack stack  81M Mar 31 22:28 oc
+-rwxr-xr-x. 2 stack stack  81M Mar 31 22:28 kubectl
+-rwxr-xr-x. 1 stack stack 318M Mar 31 22:40 openshift-install
+-rwxrwxrwx. 1 stack stack  27M Apr 15 15:49 openshift-client-linux.tar.gz
+-rwxrwxrwx. 1 stack stack  79M Apr 15 15:49 openshift-install-linux.tar.gz
+-rw-rw-r--. 1 stack stack 2.8K Apr 15 15:49 pull-secret
+-rw-rw-r--. 1 stack stack 1.8G Apr 15 15:51 rhcos-4.2.0-x86_64-openstack.qcow2
+-rw-rw-r--. 1 stack stack  882 Apr 15 17:24 clouds.yaml
+drwxrwxr-x. 2 stack stack 4.0K Apr 15 17:44 bkrsa
+-rw-rw-r--. 1 stack stack  77M Apr 15 21:58 rhcos-4.2.0-x86_64-installer.iso
+-rw-r-----. 1 stack stack 3.5K Apr 16 11:01 install-config.yaml-bkp
+drwxr-x---. 2 stack stack 4.0K Apr 16 11:08 auth
+-rw-r-----. 1 stack stack 293K Apr 16 11:08 bootstrap.ign
+-rw-r-----. 1 stack stack  191 Apr 16 11:08 metadata.json
+drwxr-x---. 2 stack stack 4.0K Apr 16 11:14 manifests
+drwxr-x---. 2 stack stack 4.0K Apr 16 11:14 openshift
+(overcloud) [stack@indr01vr amitpoc]$
